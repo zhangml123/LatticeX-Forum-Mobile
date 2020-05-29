@@ -1,3 +1,4 @@
+   
 /**
  * Sample React Native App
  * https://github.com/facebook/react-native
@@ -7,54 +8,65 @@
  */
 
 import React, { Component } from 'react';
-import {Button, Text, View, Image, StyleSheet, BackHandler, TouchableOpacity} from 'react-native';
+import {Button, Text, View, Image, StyleSheet, BackHandler, TouchableOpacity, Platform} from 'react-native';
 import { WebView } from 'react-native-webview';
 var WEB_VIEW_REF = 'webview';
+var URL = 'https://forum.latticex.foundation' 
+var IsIOS = Platform.OS == 'IOS' ? true : false;
+//console.log(IsIOS)
 class App extends Component {
   constructor(props){
       super(props);
       this.state = {
           loading: true,
-          backEnabled: false,
-          forwardEnabled: false,
+          backEnabled: !IsIOS ? true : false,
+          forwardEnabled: !IsIOS ? true : false,
       }
       
   }
- /* componentDidMount() {
+  componentDidMount() {
+	console.log("componentDidMount")
     BackHandler.addEventListener('hardwareBackPress',
     this.onBackButtonPressAndroid);
   }
-
   componentWillUnmount() {
     BackHandler.removeEventListener('hardwareBackPress',
     this.onBackButtonPressAndroid);
   }
   onBackButtonPressAndroid = () => {
-      if (this.props.navigation.isFocused()) {
-         if (this.lastBackPressed && this.lastBackPressed + 2000 >= Date.now()) {
-          //最近2秒内按过back键，可以退出应用。
-          return false;
-         }
-         this.lastBackPressed = Date.now();
-         ToastAndroid.show('再按一次退出应用', ToastAndroid.SHORT);
-         return true;
-      }
-  }*/
+	  console.log("onBackButtonPressAndroid")
+	  
+	  
+	  //this.refs[WEB_VIEW_REF].updateNavigationState({navState:""})
+	  this.refs[WEB_VIEW_REF].goBack();
+	  
+	  
+     
+	 if (this.lastBackPressed && this.lastBackPressed + 500 >= Date.now()) {
+	  //最近秒内按过back键，可以退出应用。
+	  return false;
+	 }
+	 this.lastBackPressed = Date.now();
+	 //ToastAndroid.show('再按一次退出应用', ToastAndroid.SHORT);
+	 return true;
+      
+  }
   loaded(){
     console.log("loaded")
     this.setState({loading:false})
   }
     
   onNavigationStateChange = (navState)=> {
-      
+      console.log("onNavigationStateChange")
+	  console.log(navState)
       this.setState({
-                 
-        backEnabled: navState.canGoBack,
-        forwardEnabled: navState.canGoForward
+        forwardEnabled: navState.canGoForward,
+		backEnabled: navState.canGoBack
                     
     });
   };
   _prev(){
+	  console.log(this.refs)
       //alert("_prev")
       this.refs[WEB_VIEW_REF].goBack();      //console.log(this.refs)
       //this.props.nav.pop();
@@ -70,7 +82,7 @@ class App extends Component {
       <>
         <WebView
           ref={WEB_VIEW_REF}
-      style={{"width":"100%","height":200,"marginTop":20}} source={{ uri: 'https://forum.latticex.foundation' }}
+      style={{"width":"100%","height":200,"marginTop":20}} source={{ uri: URL}}
           javascriptEnabled={true}
           scrollEnabled={true}
           scalesPageToFit={true}
@@ -81,12 +93,12 @@ class App extends Component {
         onNavigationStateChange={this.onNavigationStateChange}
             />
         {loading ?
-         <View style={{flex: 1, alignItems: 'center', justifyContent: 'center' ,backgroundColor:'#fff'}}>
+		  <View style={{flex: 1, alignItems: 'center', justifyContent: 'center' ,backgroundColor:'#fff'}}>
             <Image style={styles.imageLocalStyle} source={require('./images/timg.gif')} />
-           
+          
           </View> :
-         
-            <View style={{"width":"100%","height":30,"textAlign":"center"}}>
+			
+            IsIOS ? (<View style={{"width":"100%","height":30,"textAlign":"center"}}>
             { backEnabled ?
             <TouchableOpacity style={{width:30,height:30,
            position:"absolute",
@@ -115,7 +127,6 @@ class App extends Component {
                       <Image
                       style={styles.imageLocalStyle}
                       source={require('./images/next1.png')} />
-            
              </TouchableOpacity>
             :
              <Image style={{width:30,height:30,
@@ -123,9 +134,9 @@ class App extends Component {
             right:"40%"            }}
               source={require('./images/next.png')} />
             }
+			
             
-            
-            </View>
+            </View>) : null
             
             }
         </>
@@ -142,3 +153,4 @@ const styles = StyleSheet.create({
 })
 
 export default App;
+
